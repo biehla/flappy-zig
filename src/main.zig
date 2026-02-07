@@ -5,6 +5,10 @@
 
 const rl = @import("raylib");
 const rm = @import("raymath");
+const scenes = @import("scenes/scenes.zig");
+
+const Player = @import("lib/structs.zig").Player;
+const EnvItem = @import("lib/structs.zig").EnvItem;
 
 const Rect = rl.Rectangle;
 const Vec2 = rl.Vector2;
@@ -27,18 +31,6 @@ const PLAYER_HOR_SPD: f32 = 200;
 
 const SCREEN_WIDTH: i32 = 800;
 const SCREEN_HEIGHT: i32 = 450;
-
-const Player = struct {
-    can_jump: bool,
-    speed: rl.Vector2,
-    position: rl.Vector2,
-};
-
-const EnvItem = struct {
-    blocking: bool,
-    rect: rl.Rectangle,
-    color: rl.Color,
-};
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -100,30 +92,7 @@ pub fn main() anyerror!void {
 
         // Draw
         //----------------------------------------------------------------------------------
-        {
-            rl.beginDrawing();
-            defer rl.endDrawing();
-
-            rl.clearBackground(.sky_blue);
-
-            {
-                rl.beginMode2D(camera);
-                defer rl.endMode2D();
-
-                for (env_items) |env_item| {
-                    rl.drawRectangleRec(env_item.rect, env_item.color);
-                }
-
-                rl.drawCircle(100, 100, 100, .yellow);
-
-                const player_rect = Rect.init(player.position.x - 20, player.position.y - 40, 40, 40);
-                rl.drawRectangleRec(player_rect, .red);
-                rl.drawCircleV(player.position, 5, .gold);
-            }
-
-            rl.drawText("Controls:", 20, 20, 10, .black);
-            rl.drawText("- Right/Left to move", 40, 40, 10, .dark_gray);
-        }
+        scenes.displayScene(.MAIN_MENU, camera);
 
         //----------------------------------------------------------------------------------
     }
@@ -134,6 +103,25 @@ pub fn main() anyerror!void {
 //------------------------------------------------------------------------------------
 
 fn updatePlayer(player: *Player, env_items: []EnvItem, delta: f32) void {
+    var hit_obstacle = false;
+    if (player.position.x >= SCREEN_WIDTH - 40) {
+        player.speed.x = 0;
+        player.position.x -= 1;
+        hit_obstacle = true;
+    } else if (player.position.x <= 40) {
+        player.speed.x = 0;
+        player.position.x += 1;
+        hit_obstacle = true;
+    }
+
+    if (player.position.y >= SCREEN_HEIGHT + 40) {
+        player.speed.y = -0.1;
+        player.position.y -= 1;
+    } else if (player.position.y <= 100) {
+        player.speed.y = -0.1;
+        player.position.y += 1;
+    }
+
     if (rl.isKeyDown(.left)) {
         player.speed.x = -PLAYER_HOR_SPD;
     } else if (rl.isKeyDown(.right)) {
@@ -146,19 +134,11 @@ fn updatePlayer(player: *Player, env_items: []EnvItem, delta: f32) void {
         player.speed.y = -PLAYER_JUMP_SPD;
     }
 
-    if (player.position.x >= SCREEN_WIDTH - 40 or player.position.x <= 40) {
-        player.speed.x *= 0;
-    }
-    if (player.position.y >= SCREEN_HEIGHT + 40 or player.position.y <= 100) {
-        player.speed.y *= 0;
-    }
-
-    var hit_obstacle = false;
     for (env_items) |ei| {
         var p: *Vec2 = &player.position;
         if (ei.blocking and
             ei.rect.x <= p.x and
-            ei.rect.x + ei.rect.width >= p.x and
+            // ei.rect.x + ei.rect.width >= p.x and
             ei.rect.y >= p.y and
             ei.rect.y <= p.y + player.speed.x * delta)
         {
@@ -170,9 +150,9 @@ fn updatePlayer(player: *Player, env_items: []EnvItem, delta: f32) void {
     }
 
     if (!hit_obstacle) {
+        player.speed.y += G * delta;
         player.position.y += player.speed.y * delta;
         player.position.x += player.speed.x * delta;
-        // player.speed.y += G * delta;
     }
 }
 
