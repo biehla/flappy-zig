@@ -3,7 +3,7 @@ let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-
 let v:this_session=expand("<sfile>:p")
 silent only
 silent tabonly
-cd E:/Anand\ Biehl/Documents/Programming/flappy-zig/src
+cd ~/Documents/programming/flappy-zig
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
@@ -13,17 +13,15 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +1 root.zig
-badd +144 main.zig
+badd +11 src/main.zig
+badd +10 src/scenes/scenes.zig
+badd +39 src/scenes/mainMenu.zig
+badd +39 src/scenes/mainScene.zig
+badd +20 src/lib/structs.zig
+badd +37 src/lib/components/button.zig
+badd +4 src/lib/uiFunctions.zig
 argglobal
 %argdel
-$argadd root.zig
-edit main.zig
-let s:save_splitbelow = &splitbelow
-let s:save_splitright = &splitright
-set splitbelow splitright
-let &splitbelow = s:save_splitbelow
-let &splitright = s:save_splitright
 wincmd t
 let s:save_winminheight = &winminheight
 let s:save_winminwidth = &winminwidth
@@ -31,23 +29,6 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-argglobal
-setlocal foldmethod=expr
-setlocal foldexpr=v:lua.require'lazyvim.util'.ui.foldexpr()
-setlocal foldmarker={{{,}}}
-setlocal foldignore=#
-setlocal foldlevel=99
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldenable
-42
-sil! normal! zo
-let s:l = 138 - ((4 * winheight(0) + 22) / 44)
-if s:l < 1 | let s:l = 1 | endif
-keepjumps exe s:l
-normal! zt
-keepjumps 138
-normal! 0
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
