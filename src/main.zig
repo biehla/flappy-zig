@@ -78,18 +78,6 @@ pub fn main() anyerror!void {
             player.position = Vec2.init(400, 280);
         }
 
-        // call update camera by pointer
-        // updateCameraCenter(
-        //     &camera,
-        //     &player,
-        //     &env_items,
-        //     delta_time,
-        //     screen_width,
-        //     screen_height,
-        // );
-
-        //----------------------------------------------------------------------------------
-
         // Draw
         //----------------------------------------------------------------------------------
         scenes.displayScene(.MAIN_MENU, camera);
@@ -138,7 +126,7 @@ fn updatePlayer(player: *Player, env_items: []EnvItem, delta: f32) void {
         var p: *Vec2 = &player.position;
         if (ei.blocking and
             ei.rect.x <= p.x and
-            // ei.rect.x + ei.rect.width >= p.x and
+            ei.rect.x + ei.rect.width >= p.x and
             ei.rect.y >= p.y and
             ei.rect.y <= p.y + player.speed.x * delta)
         {
