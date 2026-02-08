@@ -49,6 +49,7 @@ pub fn main() anyerror!void {
         .{ .rect = Rect.init(700, 300, 75, 250), .blocking = true, .color = .blue },
         .{ .rect = Rect.init(700, 0, 75, 250), .blocking = true, .color = .blue },
     };
+    var scene: scenes.Scenes = .MAIN_MENU;
 
     var camera: rl.Camera2D = .{
         .target = player.position,
@@ -76,11 +77,13 @@ pub fn main() anyerror!void {
         if (rl.isKeyPressed(.r)) {
             camera.zoom = 1;
             player.position = Vec2.init(400, 280);
+
+            scene = .MAIN;
         }
 
         // Draw
         //----------------------------------------------------------------------------------
-        scenes.displayScene(.MAIN_MENU, camera);
+        scenes.displayScene(scene, camera);
 
         //----------------------------------------------------------------------------------
     }
