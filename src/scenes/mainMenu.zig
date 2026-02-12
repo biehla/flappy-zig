@@ -5,21 +5,7 @@ const Player = Env.Player;
 const Rect = rl.Rectangle;
 
 pub fn showScene(camera: rl.Camera2D) void {
-//    const button: Env.button.TextButton = .{
-//        .backgroundColour = .red,
-//        .textColour = .ray_white,
-//        .shadow = .bottom_left,
-//        .hover = false,
-//
-//        .location = .{
-//            .x1 = 50,
-//            .y1 = 150,
-//            .x2 = 700,
-//            .y2 = 300
-//        },
-//
-//        .text = "Hello :)"
-//    };
+    const button: Env.button.TextButton = .{ .backgroundColour = .red, .textColour = .ray_white, .shadow = .bottom_left, .hover = false, .location = .{ .x1 = 50, .y1 = 150, .x2 = 700, .y2 = 300 }, .text = "Hello :)" };
 
     rl.beginDrawing();
     defer rl.endDrawing();
@@ -32,10 +18,12 @@ pub fn showScene(camera: rl.Camera2D) void {
 
         rl.drawRectangle(50, 150, 700, 300, .green);
 
-        var edges = [_]Env.OutlineEdges{ .Top, .Bottom, .Left, .Right };
-        Env.drawRectangleOutline(50, 100, 700, 300, 10, &edges);
+        const edge = Env.OutlineEdges;
+
+        const edges = .{ edge.Left, edge.Right, edge.Top, edge.Bottom };
+        Env.drawRectangleOutline(50, 100, 700, 300, 10, edges);
 
         rl.drawText("Florpy Borb", (Env.SCREEN_WIDTH / 2) - 150, 70, 50, .white);
-//        button.drawButton();
+        button.drawButton();
     }
 }

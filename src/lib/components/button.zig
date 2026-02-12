@@ -5,6 +5,7 @@ const OutlineEdges = @import("../structs.zig").OutlineEdges;
 
 pub const CallbackFunction = *const fn () void;
 
+pub const Location = struct { x1: i32, x2: i32, y1: i32, y2: i32 };
 pub const Location = struct {
     x1: i32,
     x2: i32,
@@ -33,14 +34,10 @@ pub const TextButton = struct {
         const location = self.location;
         switch (self.hover) {
             true => {
-                var outlineEdges = [_]OutlineEdges{ .Bottom, .Left };
-
                 rl.drawRectangle(location.x1, location.y1, location.x2, location.y2, self.backgroundColour);
                 drawOutline(location.x1, location.y1, location.x2, location.y2, 10, &outlineEdges);
             },
             false => {
-                var outlineEdges = [_]OutlineEdges{ .Bottom, .Left };
-
                 rl.drawRectangle(location.x1, location.y1, location.x2, location.y2, self.textColour);
                 drawOutline(location.x1, location.y1, location.x2, location.y2, 10, &outlineEdges);
             }
