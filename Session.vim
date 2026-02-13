@@ -13,22 +13,51 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +11 src/main.zig
-badd +10 src/scenes/scenes.zig
-badd +39 src/scenes/mainMenu.zig
-badd +39 src/scenes/mainScene.zig
-badd +20 src/lib/structs.zig
-badd +37 src/lib/components/button.zig
-badd +4 src/lib/uiFunctions.zig
+badd +46 ~/Documents/programming/flappy-zig/src/scenes.zig
+badd +135 ~/.local/share/zigup/0.15.1/files/lib/std/SinglyLinkedList.zig
+badd +1610 ~/.local/share/zigup/0.15.1/files/lib/std/fs/File.zig
 argglobal
 %argdel
-wincmd t
-let s:save_winminheight = &winminheight
-let s:save_winminwidth = &winminwidth
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
+edit ~/Documents/programming/flappy-zig/src/scenes.zig
+argglobal
+setlocal foldmethod=expr
+setlocal foldexpr=v:lua.require'lazyvim.util'.ui.foldexpr()
+setlocal foldmarker={{{,}}}
+setlocal foldignore=#
+setlocal foldlevel=99
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldenable
+16
+sil! normal! zo
+17
+sil! normal! zo
+23
+sil! normal! zo
+24
+sil! normal! zo
+24
+sil! normal! zo
+24
+sil! normal! zo
+34
+sil! normal! zo
+23
+sil! normal! zo
+36
+sil! normal! zo
+44
+sil! normal! zo
+52
+sil! normal! zo
+52
+sil! normal! zo
+let s:l = 46 - ((24 * winheight(0) + 17) / 35)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 46
+normal! 0
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -36,8 +65,6 @@ endif
 unlet! s:wipebuf
 set winheight=1 winwidth=20
 let &shortmess = s:shortmess_save
-let &winminheight = s:save_winminheight
-let &winminwidth = s:save_winminwidth
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)

@@ -5,7 +5,7 @@
 
 const rl = @import("raylib");
 const rm = @import("raymath");
-const scenes = @import("scenes/scenes.zig");
+const scenes = @import("scenes.zig");
 
 const Player = @import("lib/structs.zig").Player;
 const EnvItem = @import("lib/structs.zig").EnvItem;

@@ -1,0 +1,143 @@
+* Zen
+  -  Communicate intent precisely.
+  -  Edge cases matter.
+  -  Favor reading code over writing code.
+  -  Only one obvious way to do things.
+  -  Runtime crashes are better than bugs.
+  -  Compile errors are better than runtime crashes.
+  -  Incremental improvements.
+  -  Avoid local maximums.
+  -  Reduce the amount one must remember.
+  -  Focus on code rather than style.
+  -  Resource allocation may fail; resource deallocation must succeed.
+  -  Memory is a resource.
+  -  Together we serve the users.
+
+* Conventions
+
+These coding conventions are not enforced by the compiler, but they are shipped in this documentation along with the compiler in order to provide a point of reference, should anyone wish to point to an authority on agreed upon Zig coding style.
+
+** [[https://ziglang.org/documentation/0.15.2/#toc-avoid-redundancy-in-names][avoid redundancy in names]]
+
+avoid these words in type names:
+
+-   value
+-   data
+-   context
+-   manager
+-   utils, misc, or somebody's initials
+
+everything is a value, all types are data, everything is context, all logic manages state. nothing is communicated by using a word that applies to all types.
+
+temptation to use "utilities", "miscellaneous", or somebody's initials is a failure to categorize, or more commonly, overcategorization. such declarations can live at the root of a module that needs them with no namespace needed.
+
+** [[https://ziglang.org/documentation/0.15.2/#toc-avoid-redundant-names-in-fully-qualified-namespaces][avoid redundant names in fully-qualified namespaces]]
+
+every declaration is assigned a **fully qualified namespace** by the compiler, creating a tree structure. choose names based on the fully-qualified namespace, and avoid redundant name segments.
+
+redundant\_fqn.zig
+#+begin_src: zig
+ const std = @import("std");
+ 
+ pub const json = struct {
+     pub const jsonvalue = union(enum) {
+         number: f64,
+         boolean: bool,
+         // ...
+     };
+ };
+ 
+ pub fn main() void {
+     std.debug.print("{s}\n", .{@typename(json.jsonvalue)});
+ }
+#+end_src
+
+#+begin_src: shell
+$ zig build-exe redundant\_fqn.zig
+$ ./redundant\_fqn
+redundant\_fqn.json.jsonvalue
+#+end_src
+
+in this example, "json" is repeated in the fully-qualified namespace. the solution is to delete `json` from `jsonvalue`. in this example we have an empty struct named `json` but remember that files also act as part of the fully-qualified namespace.
+
+this example is an exception to the rule specified in [avoid redundancy in names](https://ziglang.org/documentation/0.15.2/#avoid-redundancy-in-names). the meaning of the type has been reduced to its core: it is a json value. the name cannot be any more specific without being incorrect.
+
+** [[https://ziglang.org/documentation/0.15.2/#toc-whitespace][whitespace]]
+
+-   4 space indentation
+-   open braces on same line, unless you need to wrap.
+-   if a list of things is longer than 2, put each item on its own line and exercise the ability to put an extra comma at the end.
+-   line length: aim for 100; use common sense.
+
+** [[https://ziglang.org/documentation/0.15.2/#toc-names][examples]]
+
+roughly speaking: `camelcasefunctionname`, `titlecasetypename`, `snake_case_variable_name`. more precisely:
+
+-   if `x` is a `type` then `x` should be `titlecase`, unless it is a `struct` with 0 fields and is never meant to be instantiated, in which case it is considered to be a "namespace" and uses `snake_case`.
+-   if `x` is callable, and `x`'s return type is `type`, then `x` should be `titlecase`.
+-   if `x` is otherwise callable, then `x` should be `camelcase`.
+-   otherwise, `x` should be `snake_case`.
+
+acronyms, initialisms, proper nouns, or any other word that has capitalization rules in written english are subject to naming conventions just like any other word. even acronyms that are only 2 letters long are subject to these conventions.
+
+file names fall into two categories: types and namespaces. if the file (implicitly a struct) has top level fields, it should be named like any other struct with fields using `titlecase`. otherwise, it should use `snake_case`. directory names should be `snake_case`.
+
+these are general rules of thumb; if it makes sense to do something different, do what makes sense. for example, if there is an established convention such as `enoent`, follow the established convention.
+
+** [[https://ziglang.org/documentation/0.15.2/#toc-examples][examples]]
+
+style\_example.zig
+#+begin_src: zig
+ const namespace_name = @import("dir_name/file_name.zig");
+ const typename = @import("dir_name/typename.zig");
+ var global_var: i32 = undefined;
+ const const_name = 42;
+ const primitive_type_alias = f32;
+ const string_alias = []u8;
+ 
+ const structname = struct {
+     field: i32,
+ };
+ const structalias = structname;
+ 
+ fn functionname(param_name: typename) void {
+     var functionpointer = functionname;
+     functionpointer();
+     functionpointer = otherfunction;
+     functionpointer();
+ }
+ const functionalias = functionname;
+ 
+ fn listtemplatefunction(comptime childtype: type, comptime fixed_size: usize) type {
+     return list(childtype, fixed_size);
+ }
+ 
+ fn shortlist(comptime t: type, comptime n: usize) type {
+     return struct {
+         field_name: [n]t,
+         fn methodname() void {}
+     };
+ }
+ 
+ // the word xml loses its casing when used in zig identifiers.
+ const xml_document =
+     \\<?xml version="1.0" encoding="utf-8"?>
+     \\<document>
+     \\</document>
+ ;
+ const xmlparser = struct {
+     field: i32,
+ };
+ 
+ // the initials be (big endian) are just another word in zig identifier names.
+ fn readu32be() u32 {}
+#+end_src
+
+see the [[https://ziglang.org/documentation/0.15.2/#zig-standard-library][zig standard library]] for more examples.
+
+** [[https://ziglang.org/documentation/0.15.2/#toc-doc-comment-guidance][doc comment guidance]]
+
+-   omit any information that is redundant based on the name of the thing being documented.
+-   duplicating information onto multiple similar functions is encouraged because it helps ides and other tools provide better help text.
+-   use the word **assume** to indicate invariants that cause _unchecked_ [illegal behavior](https://ziglang.org/documentation/0.15.2/#illegal-behavior) when violated.
+-   use the word **assert** to indicate invariants that cause _safety-checked_ [illegal behavior](https://ziglang.org/documentation/0.15.2/#illegal-behavior) when violated.
