@@ -1,11 +1,10 @@
 const std = @import("std");
 const rl = @import("raylib");
-const OutlineEdges = @import("../structs.zig").OutlineEdges;
+const OutlineEdges = @import("../lib.zig").OutlineEdges;
 
 pub const CallbackFunction = *const fn () void;
 
-pub const Location = struct { x1: i32, x2: i32, y1: i32, y2: i32 };
-
+pub const Location = struct { x: i32, y: i32, width: i32, height: i32 };
 
 pub const TextButton = struct {
     text: *const [8:0]u8,
@@ -13,25 +12,62 @@ pub const TextButton = struct {
     textColour: rl.Color,
     backgroundColour: rl.Color,
     location: Location,
-    hover: bool,
+    border_size: i32,
     // callback: CallbackFunction,
 
     pub fn drawButton(self: TextButton) void {
+        var hover = false;
+
         const location = self.location;
-        switch (self.hover) {
+        const mouse = .{
+            .x = rl.getMouseX(),
+            .y = rl.getMouseY()
+        };
+
+        if ((mouse.x >= self.location.x and
+            mouse.x <= self.location.x + self.location.width) and
+            (mouse.y >= self.location.y and
+            mouse.y <= self.location.y + self.location.height)) {
+            hover = true;
+        }
+
+        switch (hover) {
             false => {
                 var edges = [_]OutlineEdges{ .Left, .Bottom };
-                const center = calculateCenter(location.x1, location.y1, location.x2, location.y2);
+                const center = calculateCenter(self.location.x, self.location.y, self.location.width, self.location.height);
 
-                rl.drawRectangle(location.x1, location.y1, location.x2, location.y2, self.backgroundColour);
-                drawRectangleOutline(location.x1, location.y1, location.x2, location.y2, 10, &edges, self.textColour);
+                rl.drawRectangle(self.location.x, self.location.y,
+                                self.location.width, self.location.height,
+                                self.backgroundColour
+                );
+
+                drawRectangleOutline(location.x, location.y,
+                                    location.width, location.height,
+                                    self.border_size,
+                                    &edges,
+                                    self.textColour
+                );
+
                 drawText(center[0], center[1], self.text, self.text_size, self.textColour);
             },
             true => {
-                // var edges = [_]OutlineEdges{ .Right, .Top };
+                var edges = [_]OutlineEdges{ .Left, .Bottom };
+                const center = calculateCenter(self.location.x, self.location.y, self.location.width, self.location.height);
 
-                rl.drawRectangle(location.x1, location.y1, location.x2, location.y2, self.textColour);
-                // drawOutline(location.x1, location.y1, location.x2, location.y2, 10, &edges);
+                rl.drawRectangle(self.location.x, self.location.y,
+                                self.location.width, self.location.height,
+                                self.textColour
+                );
+
+                drawRectangleOutline(location.x, location.y,
+                                    location.width, location.height,
+                                    self.border_size,
+                                    &edges,
+                                    self.backgroundColour
+                );
+
+                drawText(center[0], center[1], self.text, self.text_size, self.backgroundColour);
+            
             },
         }
     }
@@ -52,7 +88,9 @@ pub const TextButton = struct {
         rl.drawText(cText, x, y, text_size, text_colour);
     }
 
-    fn calculateCenter(x1: i32, y1: i32, x2: i32, y2: i32) [2]i32 {
-        return [_]i32{@divFloor(x2-x1, 2)+x1, @divFloor(y2-y1, 2)+y1};
+    fn calculateCenter(x: i32, y: i32, width: i32, height: i32) [2]i32 {
+        const x_center = x + @divFloor(width, 2);
+        const y_center = y + @divFloor(height, 2);
+        return [2]i32{x_center, y_center};
     }
 };

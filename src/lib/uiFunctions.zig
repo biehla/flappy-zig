@@ -1,5 +1,5 @@
 const rl = @import("raylib");
-const Env = @import("structs.zig");
+const Env = @import("lib.zig");
 
 pub fn drawRectangleOutline(x1: i32, y1: i32, x2: i32, y2: i32, width: i32, sides: []Env.OutlineEdges) void {
     for (sides) |side| {

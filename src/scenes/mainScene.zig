@@ -1,7 +1,7 @@
 const rl = @import("raylib");
 const Vec2 = rl.Vector2;
 
-const env = @import("../lib/structs.zig");
+const env = @import("../lib/lib.zig");
 const EnvItem = env.EnvItem;
 const Player = env.Player;
 

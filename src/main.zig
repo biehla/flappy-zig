@@ -7,8 +7,8 @@ const rl = @import("raylib");
 const rm = @import("raymath");
 const scenes = @import("scenes.zig");
 
-const Player = @import("lib/structs.zig").Player;
-const EnvItem = @import("lib/structs.zig").EnvItem;
+const Player = @import("lib/lib.zig").Player;
+const EnvItem = @import("lib/lib.zig").EnvItem;
 
 const Rect = rl.Rectangle;
 const Vec2 = rl.Vector2;
@@ -80,6 +80,7 @@ pub fn main() anyerror!void {
 
             scene = .MAIN;
         }
+
 
         // Draw
         //----------------------------------------------------------------------------------
