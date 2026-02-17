@@ -51,7 +51,7 @@ pub const TextButton = struct {
                 drawText(center[0], center[1], self.text, self.text_size, self.textColour);
             },
             true => {
-                var edges = [_]OutlineEdges{ .Left, .Bottom };
+                var edges = [_]OutlineEdges{ .Right, .Top };
                 const center = calculateCenter(self.location.x, self.location.y, self.location.width, self.location.height);
 
                 rl.drawRectangle(self.location.x, self.location.y,
@@ -76,8 +76,8 @@ pub const TextButton = struct {
         for (sides) |side| {
             switch (side) {
                 .Left => rl.drawRectangle(x1, y1, width, y2, outline_colour),
-                .Right => rl.drawRectangle(x2 + 40, y1 + 50, width, y2, .dark_green),
-                .Top => rl.drawRectangle(x1, y1 + 50, x2, width, .dark_green),
+                .Right => rl.drawRectangle(x1 + x2 - width, y1, width, y2, outline_colour),
+                .Top => rl.drawRectangle(x1, y1 + 50, x2, width, outline_colour),
                 .Bottom => rl.drawRectangle(x1, y2 + 200, x2, width, outline_colour),
             }
         }
