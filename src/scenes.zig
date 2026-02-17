@@ -21,10 +21,10 @@ pub fn displayScene(scene: Scenes, camera: rl.Camera2D) void {
 }
 
 fn getScenes() anyerror!void {
-    var scenes_dir_handle = try fs.cwd().openDir("./scenes/", .{.iterate = true});
+    var scenes_dir_handle = try fs.cwd().openDir("./scenes/", .{ .iterate = true });
     defer scenes_dir_handle.close();
     var scenes_dir_contents = scenes_dir_handle.iterate();
-    var scenes_zon_handle = try fs.cwd().openFile("scenes.zon", .{.mode = .write_only});
+    var scenes_zon_handle = try fs.cwd().openFile("scenes.zon", .{ .mode = .write_only });
     defer scenes_zon_handle.close();
 
     // var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -44,13 +44,13 @@ fn getScenes() anyerror!void {
     while (current_file) |file| : (current_file = file.next) {
         const fileNode: *SceneFile = @fieldParentPtr("node", file);
 
-        const fileName = std.zon.stringify.serialize(fileNode, .{}, scenes_zon_handle.write())  //(fileNode.data);
+        const fileName = std.zon.stringify.serialize(fileNode, .{}, scenes_zon_handle.write()); //(fileNode.data);
         scenes_zon_handle.writer(fileName);
     }
 }
 
 pub fn main() void {
     getScenes() catch |err| {
-        std.debug.print("{any}", .{ err });
+        std.debug.print("{any}", .{err});
     };
 }

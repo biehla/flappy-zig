@@ -104,14 +104,28 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
 
-    scene.main();
-
     // This creates a top level step. Top level steps have a name and can be
     // invoked by name when running `zig build` (e.g. `zig build run`).
     // This will evaluate the `run` step rather than the default step.
     // For a top level step to actually do something, it must depend on other
     // steps (e.g. a Run step, as we will see in a moment).
     const run_step = b.step("run", "Run the app");
+
+    // const scene_analysis = b.addExecutable(.{
+    //     .name = "scene_analysis",
+    //     .root_module = b.createModule(.{
+    //         .root_source_file = b.path("src/scenes.zig"),
+    //         .target = target,
+    //         .optimize = optimize,
+    //     }),
+    // });
+
+    // const analysis_step = b.step(scene_analysis.step.name, "Analyse and import scene files.");
+    // const analysis_cmd = b.addRunArtifact(exe);
+    // analysis_step.dependOn(&analysis_cmd.step);
+    // analysis_cmd.step.dependOn(b.getInstallStep());
+
+    // scene_analysis.
 
     // This creates a RunArtifact step in the build graph. A RunArtifact step
     // invokes an executable compiled by Zig. Steps will only be executed by the

@@ -1,6 +1,6 @@
 const rl = @import("raylib");
 pub const drawRectangleOutline = @import("uiFunctions.zig").drawRectangleOutline;
-pub const button = @import("components/button.zig");
+pub const button = @import("components/Button.zig");
 
 pub const SCREEN_WIDTH: i32 = 800;
 pub const SCREEN_HEIGHT: i32 = 450;
