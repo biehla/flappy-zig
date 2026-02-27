@@ -24,29 +24,58 @@ fn getScenes() anyerror!void {
     var scenes_dir_handle = try fs.cwd().openDir("./scenes/", .{ .iterate = true });
     defer scenes_dir_handle.close();
     var scenes_dir_contents = scenes_dir_handle.iterate();
-    var scenes_zon_handle = try fs.cwd().openFile("scenes.zon", .{ .mode = .write_only });
+    var scenes_zon_handle = scenes_dir_handle.createFile("../scenes.zon", .{}) catch |err| {
+        std.log.err("poop", .{});
+        std.log.err("poop {any}", .{err});
+        std.debug.print("poop {any}", .{err});
+        return fs.Dir.OpenError.FileNotFound;
+    };
+    // var buffer: [100]u8 = undefined;
+    // var fileWriter = scenes_zon_handle.writer(&buffer);
     defer scenes_zon_handle.close();
 
-    // var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    // defer arena.deinit();
-    // const allocator = arena.allocator();
+    var arena: std.heap.ArenaAllocator = .init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
 
-    var scene_files: std.SinglyLinkedList = .{};
+
+
+    var writer: std.io.Writer.Allocating = try .initCapacity(allocator, 5);
+    defer writer.deinit();
+
+    var scene_files: std.ArrayList([]const u8) = try std.ArrayList([]const u8).initCapacity(allocator, 3);//try std.ArrayList([]const u8).initCapacity(allocator, 1);
+    defer scene_files.deinit(allocator);
 
     while (try scenes_dir_contents.next()) |scene| {
-        if (scene.kind == .file) {
-            var new_scene: SceneFile = .{ .data = scene.name };
-            scene_files.prepend(&new_scene.node);
+        const name: []const u8 = try std.mem.Allocator.dupe(allocator, u8, scene.name);
+        switch (scene.kind) {
+            .file => {
+                try scene_files.append(allocator, name);
+                std.log.err("Saving node: {s}", .{name});
+
+                // var new_scene: SceneFile = .{ .data = scene.name };
+            },
+            else => std.log.err("NOT Saving NOde: {s}", .{scene.name}),
         }
     }
 
-    var current_file = scene_files.first;
-    while (current_file) |file| : (current_file = file.next) {
-        const fileNode: *SceneFile = @fieldParentPtr("node", file);
 
-        const fileName = std.zon.stringify.serialize(fileNode, .{}, scenes_zon_handle.write()); //(fileNode.data);
-        scenes_zon_handle.writer(fileName);
+
+    // var curr = scene_files.first.?;
+
+    // scene_files.
+
+
+    while (scene_files.pop()) |file| {
+        // const node_data: *SceneFile = @fieldParentPtr("node", curr);
+        std.log.err("Logging node: {s}", .{file});
+
+        try std.zon.stringify.serialize(file, .{}, &writer.writer);
     }
+
+
+    const written = writer.written();
+    std.log.err("Log: {s}" , .{written});
 }
 
 pub fn main() void {
